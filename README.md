@@ -18,6 +18,8 @@ Alacritty is fast, minimal, and configurable — but all configuration happens t
 - **URL hints** — configure regex-based URL detection rules with custom actions and mouse bindings
 - **Auto-detection** — finds your `alacritty.toml` automatically on Windows, macOS, and Linux
 - **Non-destructive editing** — preserves comments and config sections it doesn't manage
+- **Backup & restore** — every save creates a timestamped backup, one-click revert with TOML preview
+- **Input validation** — color hex codes, regex patterns, and enum values validated live before saving
 - **Localized UI** — German and English interface
 
 ## Requirements
