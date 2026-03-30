@@ -21,7 +21,7 @@ Alacritty is fast, minimal, and configurable — but all configuration happens t
 
 ## Installation
 
-Download the latest release for your platform from the [Releases](https://github.com/youruser/AlacrittyUI/releases) page.
+Download the latest release for your platform from the [Releases](https://github.com/codixio/AlacrittyUI/releases/tag/Releases) page.
 
 Or build from source:
 
