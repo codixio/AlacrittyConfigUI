@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:AlacrittyUI.ViewModels"
+        xmlns:views="clr-namespace:AlacrittyUI.Views"
+        xmlns:res="clr-namespace:AlacrittyUI.Resources"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        x:Class="AlacrittyUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="AlacrittyUI"
+        Width="900" Height="600"
+        MinWidth="700" MinHeight="450">
+
+    <DockPanel>
+        <!-- Header bar -->
+        <Border DockPanel.Dock="Top" Padding="12,8" BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+                    <Button Content="{x:Static res:Strings.ButtonOpen}"
+                            Click="OnBrowseClick" />
+                    <Button Content="{x:Static res:Strings.ButtonSave}"
+                            Command="{Binding SaveCommand}"
+                            IsEnabled="{Binding HasConfig}" />
+                </StackPanel>
+                <TextBlock Text="{Binding ConfigPath}" VerticalAlignment="Center"
+                           Opacity="0.7" TextTrimming="CharacterEllipsis"
+                           FontFamily="Consolas,Menlo,monospace" FontSize="12" />
+            </DockPanel>
+        </Border>
+
+        <!-- Status bar -->
+        <Border DockPanel.Dock="Bottom" Padding="12,6" BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+            <TextBlock Text="{Binding StatusText}" FontSize="12" Opacity="0.7" />
+        </Border>
+
+        <!-- Main content: left tabs -->
+        <TabControl TabStripPlacement="Left"
+                    SelectedIndex="{Binding SelectedTabIndex}"
+                    Padding="0">
+
+            <TabControl.Styles>
+                <Style Selector="TabItem">
+                    <Setter Property="MinWidth" Value="120" />
+                    <Setter Property="MinHeight" Value="40" />
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="Padding" Value="16,10" />
+                </Style>
+            </TabControl.Styles>
+
+            <TabItem Header="{x:Static res:Strings.TabColors}">
+                <views:ColorEditorView DataContext="{Binding ColorEditor}" />
+            </TabItem>
+
+            <TabItem Header="{x:Static res:Strings.TabThemes}">
+                <views:ThemeManagerView DataContext="{Binding ThemeManager}" />
+            </TabItem>
+
+            <TabItem Header="{x:Static res:Strings.TabInfo}">
+                <views:InfoView DataContext="{Binding Info}" />
+            </TabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

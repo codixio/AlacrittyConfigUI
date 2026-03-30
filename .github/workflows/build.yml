@@ -1,0 +1,95 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            rid: win-x64
+            artifact: AlacrittyUI-windows-x64
+          - os: ubuntu-latest
+            rid: linux-x64
+            artifact: AlacrittyUI-linux-x64
+          - os: macos-latest
+            rid: osx-arm64
+            artifact: AlacrittyUI-macos-arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Determine version from commit count
+        shell: bash
+        run: |
+          COMMIT_COUNT=$(git rev-list --count HEAD)
+          echo "BUILD_VERSION=0.1.${COMMIT_COUNT}" >> $GITHUB_ENV
+
+      - name: Restore
+        run: dotnet restore src/AlacrittyUI/AlacrittyUI.csproj
+
+      - name: Build
+        run: dotnet build src/AlacrittyUI/AlacrittyUI.csproj -c Release --no-restore -p:Version=${{ env.BUILD_VERSION }}
+
+      - name: Publish
+        run: >
+          dotnet publish src/AlacrittyUI/AlacrittyUI.csproj
+          -c Release
+          -r ${{ matrix.rid }}
+          --self-contained true
+          -p:PublishSingleFile=true
+          -p:Version=${{ env.BUILD_VERSION }}
+          -o publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: publish/
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create archives
+        run: |
+          cd artifacts
+          for dir in */; do
+            name="${dir%/}"
+            if [[ "$name" == *windows* ]]; then
+              (cd "$name" && zip -r "../${name}.zip" .)
+            else
+              tar -czf "${name}.tar.gz" -C "$name" .
+            fi
+          done
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/*.zip
+            artifacts/*.tar.gz
