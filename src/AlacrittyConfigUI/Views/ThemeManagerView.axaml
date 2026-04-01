@@ -1,0 +1,110 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:AlacrittyConfigUI.ViewModels"
+             xmlns:models="clr-namespace:AlacrittyConfigUI.Models"
+             xmlns:res="clr-namespace:AlacrittyConfigUI.Resources"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="500"
+             x:Class="AlacrittyConfigUI.Views.ThemeManagerView"
+             x:DataType="vm:ThemeManagerViewModel">
+
+    <DockPanel Margin="16">
+        <!-- Action buttons -->
+        <StackPanel DockPanel.Dock="Bottom" Spacing="12" Margin="0,16,0,0">
+            <!-- Apply / Import / Export -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button Content="{x:Static res:Strings.ButtonApply}"
+                        Command="{Binding ApplyThemeCommand}"
+                        IsEnabled="{Binding SelectedTheme, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                <Button Content="{x:Static res:Strings.ButtonImport}"
+                        Click="OnImportClick" />
+                <Button Content="{x:Static res:Strings.ButtonExport}"
+                        Click="OnExportClick" />
+                <Button Content="{x:Static res:Strings.ButtonDelete}"
+                        Command="{Binding DeleteThemeCommand}"
+                        IsEnabled="{Binding SelectedTheme, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </StackPanel>
+
+            <!-- Save as new theme -->
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBlock Text="{x:Static res:Strings.ThemeNamePrompt}"
+                           VerticalAlignment="Center" />
+                <TextBox Text="{Binding NewThemeName}" Width="200" />
+                <Button Content="{x:Static res:Strings.ButtonSaveAsTheme}"
+                        Command="{Binding SaveCurrentAsThemeCommand}" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Theme lists -->
+        <ScrollViewer>
+            <StackPanel Spacing="16">
+                <!-- Built-in themes -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{x:Static res:Strings.ThemeBuiltIn}"
+                               FontSize="16" FontWeight="Bold" />
+                    <ListBox ItemsSource="{Binding BuiltInThemes}"
+                             SelectedItem="{Binding SelectedTheme}"
+                             MaxHeight="250">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:ThemeInfo">
+                                <Grid ColumnDefinitions="40,*,Auto" Margin="4" ColumnSpacing="10">
+                                    <!-- Color preview circle -->
+                                    <Border Width="32" Height="32" CornerRadius="16"
+                                            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                                            BorderThickness="2"
+                                            Background="{Binding BackgroundBrush}">
+                                        <TextBlock Text="Aa" FontSize="11" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Foreground="{Binding ForegroundBrush}" />
+                                    </Border>
+                                    <!-- Theme name -->
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                               VerticalAlignment="Center" FontSize="14" />
+                                    <!-- Active indicator -->
+                                    <TextBlock Grid.Column="2" Text="✓" FontSize="18" FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource SystemAccentColor}"
+                                               IsVisible="{Binding IsActive}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+
+                <!-- User themes -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="{x:Static res:Strings.ThemeUser}"
+                               FontSize="16" FontWeight="Bold" />
+                    <ListBox ItemsSource="{Binding UserThemes}"
+                             SelectedItem="{Binding SelectedTheme}"
+                             MinHeight="60" MaxHeight="200">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate x:DataType="models:ThemeInfo">
+                                <Grid ColumnDefinitions="40,*,Auto" Margin="4" ColumnSpacing="10">
+                                    <!-- Color preview circle -->
+                                    <Border Width="32" Height="32" CornerRadius="16"
+                                            BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}"
+                                            BorderThickness="2"
+                                            Background="{Binding BackgroundBrush}">
+                                        <TextBlock Text="Aa" FontSize="11" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Foreground="{Binding ForegroundBrush}" />
+                                    </Border>
+                                    <!-- Theme name -->
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}"
+                                               VerticalAlignment="Center" FontSize="14" />
+                                    <!-- Active indicator -->
+                                    <TextBlock Grid.Column="2" Text="✓" FontSize="18" FontWeight="Bold"
+                                               VerticalAlignment="Center"
+                                               Foreground="{DynamicResource SystemAccentColor}"
+                                               IsVisible="{Binding IsActive}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</UserControl>

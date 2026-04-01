@@ -14,13 +14,13 @@ jobs:
         include:
           - os: windows-latest
             rid: win-x64
-            artifact: AlacrittyUI-windows-x64
+            artifact: AlacrittyConfigUI-windows-x64
           - os: ubuntu-latest
             rid: linux-x64
-            artifact: AlacrittyUI-linux-x64
+            artifact: AlacrittyConfigUI-linux-x64
           - os: macos-latest
             rid: osx-arm64
-            artifact: AlacrittyUI-macos-arm64
+            artifact: AlacrittyConfigUI-macos-arm64
 
     runs-on: ${{ matrix.os }}
 
@@ -40,14 +40,14 @@ jobs:
           echo "BUILD_VERSION=0.1.${COMMIT_COUNT}" >> $GITHUB_ENV
 
       - name: Restore
-        run: dotnet restore src/AlacrittyUI/AlacrittyUI.csproj
+        run: dotnet restore src/AlacrittyConfigUI/AlacrittyConfigUI.csproj
 
       - name: Build
-        run: dotnet build src/AlacrittyUI/AlacrittyUI.csproj -c Release --no-restore -p:Version=${{ env.BUILD_VERSION }}
+        run: dotnet build src/AlacrittyConfigUI/AlacrittyConfigUI.csproj -c Release --no-restore -p:Version=${{ env.BUILD_VERSION }}
 
       - name: Publish
         run: >
-          dotnet publish src/AlacrittyUI/AlacrittyUI.csproj
+          dotnet publish src/AlacrittyConfigUI/AlacrittyConfigUI.csproj
           -c Release
           -r ${{ matrix.rid }}
           --self-contained true

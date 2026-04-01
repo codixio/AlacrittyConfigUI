@@ -1,0 +1,215 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:AlacrittyConfigUI.ViewModels"
+        xmlns:views="clr-namespace:AlacrittyConfigUI.Views"
+        xmlns:res="clr-namespace:AlacrittyConfigUI.Resources"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        x:Class="AlacrittyConfigUI.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding WindowTitle}"
+        Width="1350" Height="900"
+        MinWidth="1000" MinHeight="650">
+
+    <!-- Root Grid: content layer + dialog overlay layer -->
+    <Grid>
+    <DockPanel>
+        <!-- Header bar -->
+        <Border DockPanel.Dock="Top" Padding="18,12" BorderThickness="0,0,0,1"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+                    <Button Content="{x:Static res:Strings.ButtonOpen}"
+                            Click="OnBrowseClick" />
+                    <Button Content="{x:Static res:Strings.ButtonSave}"
+                            Command="{Binding SaveCommand}"
+                            IsEnabled="{Binding HasConfig}" />
+                    <Button Content="{x:Static res:Strings.ButtonRevert}"
+                            Command="{Binding RevertCommand}" />
+                    <Button Content="{x:Static res:Strings.ButtonReset}"
+                            Command="{Binding RequestResetCommand}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <TextBlock Text="{x:Static res:Strings.LabelConfig}"
+                               FontWeight="SemiBold" FontSize="15" />
+                    <TextBlock Text="{Binding ConfigPath}" Cursor="Hand"
+                               Opacity="0.7" TextTrimming="CharacterEllipsis"
+                               FontFamily="Consolas,Menlo,monospace" FontSize="14"
+                               PointerPressed="OnConfigPathClick">
+                        <TextBlock.Styles>
+                            <Style Selector="TextBlock:pointerover">
+                                <Setter Property="Opacity" Value="1.0" />
+                                <Setter Property="TextDecorations" Value="Underline" />
+                            </Style>
+                        </TextBlock.Styles>
+                    </TextBlock>
+                    <TextBlock Text="*" FontSize="16" FontWeight="Bold"
+                               IsVisible="{Binding IsDirty}"
+                               Foreground="{DynamicResource SystemAccentColor}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Status bar -->
+        <Border DockPanel.Dock="Bottom" Padding="18,10" BorderThickness="0,1,0,0"
+                BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+            <TextBlock Text="{Binding StatusText}" FontSize="14" Opacity="0.7" />
+        </Border>
+
+        <!-- Main content: sidebar + content -->
+        <Grid ColumnDefinitions="Auto,*">
+
+            <!-- Left sidebar navigation -->
+            <ListBox Grid.Column="0" SelectedIndex="{Binding SelectedTabIndex}"
+                     BorderThickness="0,0,1,0"
+                     BorderBrush="{DynamicResource SystemControlForegroundBaseMediumLowBrush}">
+                <ListBox.Styles>
+                    <Style Selector="ListBoxItem">
+                        <Setter Property="MinWidth" Value="160" />
+                        <Setter Property="MinHeight" Value="48" />
+                        <Setter Property="FontSize" Value="16" />
+                        <Setter Property="Padding" Value="20,12" />
+                    </Style>
+                </ListBox.Styles>
+                <ListBoxItem Content="{x:Static res:Strings.TabColors}" />
+                <ListBoxItem Content="{x:Static res:Strings.TabFont}" />
+                <ListBoxItem Content="{x:Static res:Strings.TabWindow}" />
+                <ListBoxItem Content="{x:Static res:Strings.TabCursor}" />
+                <ListBoxItem Content="{x:Static res:Strings.TabTerminal}" />
+                <ListBoxItem Content="{x:Static res:Strings.TabHints}" />
+                <ListBoxItem Content="{x:Static res:Strings.TabKeyboard}" />
+                <ListBoxItem Content="{x:Static res:Strings.TabThemes}" />
+                <ListBoxItem Content="{x:Static res:Strings.TabDebug}" />
+                <ListBoxItem Content="{x:Static res:Strings.TabInfo}" />
+            </ListBox>
+
+            <!-- Right content area -->
+            <Grid Grid.Column="1">
+                <Border IsVisible="{Binding IsTab0}">
+                    <views:ColorEditorView DataContext="{Binding ColorEditor}" />
+                </Border>
+                <Border IsVisible="{Binding IsTab1}">
+                    <views:FontView DataContext="{Binding Font}" />
+                </Border>
+                <Border IsVisible="{Binding IsTab2}">
+                    <views:WindowView DataContext="{Binding Window}" />
+                </Border>
+                <Border IsVisible="{Binding IsTab3}">
+                    <views:CursorView DataContext="{Binding Cursor}" />
+                </Border>
+                <Border IsVisible="{Binding IsTab4}">
+                    <views:TerminalView DataContext="{Binding Terminal}" />
+                </Border>
+                <Border IsVisible="{Binding IsTab5}">
+                    <views:HintsView DataContext="{Binding Hints}" />
+                </Border>
+                <Border IsVisible="{Binding IsTab6}">
+                    <views:KeyboardView DataContext="{Binding Keyboard}" />
+                </Border>
+                <Border IsVisible="{Binding IsTab7}">
+                    <views:ThemeManagerView DataContext="{Binding ThemeManager}" />
+                </Border>
+                <Border IsVisible="{Binding IsTab8}">
+                    <views:DebugView DataContext="{Binding Debug}" />
+                </Border>
+                <Border IsVisible="{Binding IsTab9}">
+                    <views:InfoView DataContext="{Binding Info}" />
+                </Border>
+            </Grid>
+        </Grid>
+    </DockPanel>
+
+    <!-- Dialog overlays — full window, centered -->
+    <!-- Reset confirmation -->
+        <Border IsVisible="{Binding ShowResetDialog}"
+                Background="{DynamicResource DialogOverlayBrush}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    CornerRadius="12" Padding="32" MinWidth="400"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    BoxShadow="{DynamicResource DialogBoxShadow}">
+                <StackPanel Spacing="20">
+                    <TextBlock Text="{x:Static res:Strings.ResetTitle}"
+                               FontSize="20" FontWeight="Bold" />
+                    <TextBlock Text="{x:Static res:Strings.ResetMessage}"
+                               FontSize="14" TextWrapping="Wrap" MaxWidth="360" Opacity="0.8" />
+                    <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
+                        <Button Content="{x:Static res:Strings.ButtonCancel}"
+                                Command="{Binding CancelResetCommand}" MinWidth="100" />
+                        <Button Content="{x:Static res:Strings.ButtonContinue}"
+                                Command="{Binding ConfirmResetCommand}" MinWidth="100"
+                                Classes="accent" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- Unsaved changes overlay -->
+        <Border IsVisible="{Binding ShowUnsavedDialog}"
+                Background="{DynamicResource DialogOverlayBrush}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    CornerRadius="12" Padding="32" MinWidth="420"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    BoxShadow="{DynamicResource DialogBoxShadow}">
+                <StackPanel Spacing="20">
+                    <TextBlock Text="{x:Static res:Strings.UnsavedTitle}"
+                               FontSize="20" FontWeight="Bold" />
+                    <TextBlock Text="{x:Static res:Strings.UnsavedMessage}"
+                               FontSize="14" TextWrapping="Wrap" MaxWidth="380" Opacity="0.8" />
+                    <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
+                        <Button Content="{x:Static res:Strings.ButtonCancel}"
+                                Command="{Binding UnsavedCancelCommand}" MinWidth="100" />
+                        <Button Content="{x:Static res:Strings.ButtonDiscard}"
+                                Command="{Binding UnsavedDiscardCommand}" MinWidth="100" />
+                        <Button Content="{x:Static res:Strings.ButtonSave}"
+                                Command="{Binding UnsavedSaveCommand}" MinWidth="100"
+                                Classes="accent" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Border>
+
+        <!-- Revert to backup overlay -->
+        <Border IsVisible="{Binding ShowRevertDialog}"
+                Background="{DynamicResource DialogOverlayBrush}"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border Background="{DynamicResource SystemControlBackgroundAltHighBrush}"
+                    CornerRadius="12" Padding="32" MinWidth="600" MaxWidth="800" MaxHeight="500"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    BoxShadow="{DynamicResource DialogBoxShadow}">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="{x:Static res:Strings.RevertTitle}"
+                               FontSize="20" FontWeight="Bold" Margin="0,0,0,16" />
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="12"
+                                HorizontalAlignment="Right" Margin="0,16,0,0">
+                        <Button Content="{x:Static res:Strings.ButtonCancel}"
+                                Command="{Binding CancelRevertCommand}" MinWidth="100" />
+                        <Button Content="{x:Static res:Strings.ButtonRevert}"
+                                Command="{Binding ConfirmRevertCommand}" MinWidth="100"
+                                IsEnabled="{Binding SelectedBackup, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                Classes="accent" />
+                    </StackPanel>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                        <ListBox Grid.Column="0" ItemsSource="{Binding Backups}"
+                                 SelectedItem="{Binding SelectedBackup}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Spacing="2" Margin="4">
+                                        <TextBlock Text="{Binding FileName}" FontWeight="SemiBold" />
+                                        <TextBlock Text="{Binding Modified, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}"
+                                                   FontSize="12" Opacity="0.6" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <TextBox Grid.Column="1" Text="{Binding BackupPreview}" IsReadOnly="True"
+                                 AcceptsReturn="True" FontFamily="Consolas,Menlo,monospace" FontSize="12"
+                                 TextWrapping="NoWrap" />
+                    </Grid>
+                </DockPanel>
+            </Border>
+        </Border>
+    </Grid>
+</Window>

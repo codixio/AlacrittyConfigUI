@@ -1,8 +1,8 @@
-# AlacrittyUI
+# AlacrittyConfigUI
 
 A cross-platform settings editor for the [Alacritty](https://alacritty.org/) terminal emulator.
 
-Alacritty is fast, minimal, and configurable — but all configuration happens through a TOML file. AlacrittyUI gives you a visual interface to tweak colors, fonts, keybindings, and every other setting without memorizing config keys. Changes are written directly to your `alacritty.toml` and apply instantly via Alacritty's live reload.
+Alacritty is fast, minimal, and configurable — but all configuration happens through a TOML file. AlacrittyConfigUI gives you a visual interface to tweak colors, fonts, keybindings, and every other setting without memorizing config keys. Changes are written directly to your `alacritty.toml` and apply instantly via Alacritty's live reload.
 
 ![Screenshot](docs/screenshot.png)
 
@@ -29,19 +29,19 @@ Alacritty is fast, minimal, and configurable — but all configuration happens t
 
 ## Installation
 
-Download the latest release for your platform from the [Releases](https://github.com/codixio/AlacrittyUI/releases) page.
+Download the latest release for your platform from the [Releases](https://github.com/codixio/AlacrittyConfigUI/releases) page.
 
 Or build from source:
 
 ```
-git clone https://github.com/codixio/AlacrittyUI.git
-cd AlacrittyUI
-dotnet build src/AlacrittyUI/AlacrittyUI.csproj -c Release
+git clone https://github.com/codixio/AlacrittyConfigUI.git
+cd AlacrittyConfigUI
+dotnet build src/AlacrittyConfigUI/AlacrittyConfigUI.csproj -c Release
 ```
 
 ## Usage
 
-Launch AlacrittyUI — it will find your Alacritty config automatically. If you keep your config in a non-standard location, use the file picker to point it to the right path.
+Launch AlacrittyConfigUI — it will find your Alacritty config automatically. If you keep your config in a non-standard location, use the file picker to point it to the right path.
 
 Edit colors, fonts, keybindings, or any other setting visually. Hit save, and Alacritty picks up the changes immediately.
 
