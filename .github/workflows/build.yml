@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           COMMIT_COUNT=$(git rev-list --count HEAD)
-          echo "BUILD_VERSION=0.1.${COMMIT_COUNT}" >> $GITHUB_ENV
+          echo "BUILD_VERSION=0.4.${COMMIT_COUNT}" >> $GITHUB_ENV
 
       - name: Restore
         run: dotnet restore src/AlacrittyConfigUI/AlacrittyConfigUI.csproj
